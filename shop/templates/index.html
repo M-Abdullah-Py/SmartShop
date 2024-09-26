@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Online Shopping {% endblock %}
+{% block css %}
+<style>
+  .card-img-top {
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+  }
+  .card {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .card-title {
+    text-align: center;
+  }
+  .price-tag {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    float: right;
+  }
+  .add-btn {
+    margin-top: 10px;
+    width: 100%;
+  }
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .col-lg-4, .col-md-6 {
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 15px;
+  }
+
+  /* New Category Filter CSS */
+  .filter__controls-container {
+    margin-top: 80px; /* Push the category filter section down by 80px */
+  }
+
+  .filter__controls {
+    display: flex;
+    justify-content: start;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid #eee;
+  }
+  .filter__controls li {
+    margin-right: 15px;
+  }
+  .filter__controls li a {
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+  .filter__controls li a:hover,
+  .filter__controls li a.active {
+    background-color: #8c5d4f;
+    color: #fff;
+    border: 1px solid #8c5d4f;
+  }
+  .filter__controls li a:focus {
+    outline: none;
+  }
+
+  /* Make the category container responsive */
+  @media (max-width: 768px) {
+    .filter__controls {
+      flex-wrap: wrap;
+    }
+    .filter__controls li {
+      margin-bottom: 10px;
+    }
+  }
+</style>
+{% endblock %}
+{% block body %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+<section class="hero spad set-bg" style="background-image: url('{% static 'images/image.png' %}');">
+  <div class="container">
+      <div class="hero__text text-white">
+          <h1 style="font-size: 70px;">Welcome to Your Smartphone Shop</h1>
+          <p>Discover the latest smartphones at unbeatable prices.</p>
+          <a href="#" class="primary-btn">Shop Now</a>
+      </div>
+  </div>
+</section>
+
+<!-- Add the filter__controls-container class here -->
+<div class="container mt-2 mb-3 filter__controls-container">
+  <div class="col-lg-8 col-md-8">
+    <ul class="filter__controls">
+        <!-- 'All' Products Link -->
+        <li class="active" data-filter="*">
+            <a href="{% url 'index' %}">All</a>
+        </li>
+        
+        <!-- Category Filters -->
+        {% for category in categories %}
+            <li data-filter=".{{ category.name|slugify }}">
+                <a href="{% url 'category-products' category_id=category.id %}">{{ category.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+  </div>
+
+  <div class="row">
+    {% for product in products|slice:":8" %}
+    <div class="col-lg-4 col-md-6 my-4">
+      <div class="card shadow">
+        {% with product.images.all|first as image %}
+            {% if image %}
+                <img src="{{ image.image.url }}" class="card-img-top" alt="{{ image.alt_text }}">
+            {% else %}
+                <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="No Image Available">
+            {% endif %}
+        {% endwith %}
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <hr>
+          {% if request.user.is_authenticated %}
+          <button data-product="{{product.id}}" data-action="add" class="btn add-btn update-cart"
+            style="background-color: #8c5d4f; color: white;">Add To Cart</button>
+          <a href="/product_view/{{ product.id }}/" class="btn btn-outline-secondary add-btn">View</a>
+
+          {% else %}
+          <a href="/product_view/{{ product.id }}/" class="btn btn-outline-secondary add-btn">View</a>
+          <a href="{% url 'login' %}" style="background-color: #8c5d4f; color: white;" class="btn btn-secondary add-btn">Login to add the item</a>
+          {% endif %}
+          <h4 class="price-tag">${{ product.price }}</h4>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+{% if alert %}
+  alert("Logout Successful.")
+  window.location.href = '/'
+{% endif %}
+</script>
+{% endblock %}

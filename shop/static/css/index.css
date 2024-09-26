@@ -1,0 +1,46 @@
+.hero {
+    position: relative;
+    min-height: 500px; /* Minimum height to ensure it looks good on small screens */
+    max-height: 100vh; /* Maximum height of the viewport */
+    background-image: url('{% static 'images/image.png' %}'); /* Set background image */
+    background-size: cover; /* Cover the entire section */
+    background-repeat: no-repeat; /* Prevent image repetition */
+    background-position: center; /* Center the background image */
+    display: flex;
+    align-items: center; /* Vertically center the content */
+    justify-content: center; /* Horizontally center the content */
+    text-align: center; /* Center the text */
+    padding: 20px; /* Add padding */
+    overflow: hidden; /* Hide any overflow */
+}
+
+.hero__text {
+    color: white; /* Text color */
+    z-index: 2; /* Ensure text appears above background */
+}
+
+.hero__text h1 {
+    font-size: 70px; /* Heading size */
+    margin-bottom: 20px; /* Spacing below heading */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Shadow for readability */
+}
+
+.hero__text p {
+    font-size: 20px; /* Paragraph size */
+    margin-bottom: 30px; /* Spacing below paragraph */
+}
+
+.primary-btn {
+    background-color: #8c5d4f; /* Button background color */
+    color: white; /* Button text color */
+    padding: 15px 30px; /* Button padding */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 18px; /* Button text size */
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.primary-btn:hover {
+    background-color: #7a4c3e; /* Darker shade on hover */
+}

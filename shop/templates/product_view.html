@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} {{ product.name }} {% endblock %}
+
+{% block css %}
+<style>
+  /* Product image styling */
+  .product-img {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    max-height: 400px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+
+  /* Flexbox for layout - product image/add-to-cart on the left, features/reviews on the right */
+  .product-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px; /* Adds space between the two columns */
+    margin-top: 20px;
+  }
+
+  /* Product details (left column) */
+  .product-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .product-name {
+    font-size: 35px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .product-price {
+    font-size: 25px;
+    color: #8c5d4f;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .add-btn {
+    background-color: #8c5d4f;
+    color: white;
+    width: 100%;
+    max-width: 250px;
+    margin-top: 20px;
+  }
+
+  /* Key features and review section (right column) */
+  .product-info-reviews {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  /* Key Features Section */
+  .product-features {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+
+  .features-heading {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .features-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .features-list li {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .features-list li strong {
+    color: #8c5d4f;
+  }
+
+  /* Reviews Section */
+  .reviews-section {
+    margin-top: 40px;
+  }
+
+  .review-card {
+    margin-bottom: 20px;
+  }
+
+  /* Center reviews card */
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    .product-layout {
+      flex-direction: column;
+    }
+
+    .product-details, .product-info-reviews {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% load humanize %}
+<div class="container mt-4">
+  <!-- Product Layout (Flexbox) -->
+  <div class="product-layout">
+    <!-- Left Column: Product Image and Add-to-Cart -->
+    <div class="product-details">
+      <!-- Product Image -->
+      {% if images %}
+      <img src="{{ images.first.image.url }}" alt="{{ images.first.alt_text }}" class="product-img">
+      {% endif %}
+
+      <!-- Product Name, Price, and Add-to-Cart Button -->
+      <h3 class="product-name">{{ product.name }}</h3>
+      <p class="product-price">$ {{ product.price }}</p>
+
+      <!-- Add to Cart Button -->
+      {% if request.user.is_authenticated %}
+      <button data-product="{{ product.id }}" data-action="add" class="btn add-btn update-cart">Add To Cart</button>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-secondary add-btn">Login to add the item</a>
+      {% endif %}
+    </div>
+
+    <!-- Right Column: Key Features and Reviews -->
+    <div class="product-info-reviews">
+      <!-- Key Features -->
+      <div class="product-features">
+        <h4 class="features-heading">Key Features:</h4>
+        <ul class="features-list">
+          <li><strong>Color:</strong> {{ product.color }}</li>
+          <li><strong>Size:</strong> {{ product.size }}</li>
+          <li><strong>In Stock:</strong> {{ product.stock }} units available</li>
+          <li><strong>Description:</strong> {{ product.description }}</li>
+        </ul>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="reviews-section">
+        <h2>Add Reviews Here</h2>
+        <form method="POST" action="/product_view/{{ product.id }}/">
+          {% csrf_token %}
+          <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="content"></textarea>
+            <label for="floatingTextarea2">Leave a feedback about the {{ product.name }} here.</label>
+            <br>
+            <button type="submit" class="btn btn-primary">Add Review</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- All Reviews -->
+      <div class="container mt-4 reviews-container">
+        <h2>All Reviews ({{ reviews.count }})</h2>
+        {% for review in reviews %}
+        <div class="card review-card" style="width: 100%; max-width: 600px;">
+          <div class="card-header">
+            <span style="font-size: 22px;">{{ review.customer }}</span>
+            <span style="font-size: 12px;">{{ review.datetime | naturaltime }}</span>
+          </div>
+          <div class="card-body">
+            <h6 class="card-text">{{ review.content }}</h6>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
